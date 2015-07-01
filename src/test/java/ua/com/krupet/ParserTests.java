@@ -13,7 +13,7 @@ public class ParserTests {
     @Test
     public void test_parser_with_cl_parameters() {
 
-        String cl_argument = "chuck norris";
+        String cl_argument = "jeckie chann";
         String[] args = {cl_argument};
 
         Parser.main(args);
