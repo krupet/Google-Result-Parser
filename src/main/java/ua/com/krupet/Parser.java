@@ -16,15 +16,20 @@ public class Parser {
     public static void main(String[] args) {
 
         driver.get(searchUri);
+
+        String baseWindowHandler = driver.getWindowHandle();
+
         driver.findElement(By.id("lst-ib")).clear();
         driver.findElement(By.id("lst-ib")).sendKeys("chuck norris");
         driver.findElement(By.name("btnG")).click();
 
+        driver.switchTo().window(baseWindowHandler);
+        driver.close();
         /*
             here is some bug:
             INFO: Command failed to close cleanly.
              Destroying forcefully (v2). org.openqa.selenium.os.UnixProcess$SeleniumWatchDog@78b729e6
          */
-        driver.quit();
+//        driver.quit();
     }
 }
