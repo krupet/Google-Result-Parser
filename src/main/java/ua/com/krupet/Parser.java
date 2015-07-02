@@ -4,8 +4,11 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * Created by krupet on 30.06.2015.
@@ -44,34 +47,32 @@ public class Parser {
         /*
             waiting for page rendering
          */
-        Thread.sleep(1000L); //TODO: change on wait implicitly
-
-        System.out.println(driver.getTitle());
-        System.out.println(driver.getCurrentUrl());
-
+        driver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
 
         /*
             getting list of search results on a first result page
          */
-
         List<WebElement> webElements = driver.findElements(By.xpath("//ol[@id='rso']/div[@class='srg']/li[@class='g']" +
                                                                     "/div[@class='rc']/h3[@class='r']/a"));
-        System.out.println("number of elements: " + webElements.size());
-        for (WebElement webElement: webElements) {
-//            System.out.println(webElement.getAttribute("href"));
-            System.out.println("a text:\t" + webElement.getText());
-        }
 
         /*
-            trying to "click" on first link
-         */
+            because WebDriver using cache for webElements collection I need to copy
+            all href attributes in other collection and work with it
 
-        WebElement link = webElements.get(0);
-        link.click();
-        Thread.sleep(1000);
-        System.out.println("\ntab title: " + driver.getTitle());
-        System.out.println("tab url: " + driver.getCurrentUrl());
-        baseWindowHandler = driver.getWindowHandle();
+            it is all because when I switch to another page I loosing collection of WebElements
+            because of page reloading
+         */
+        List<String> stringLinks = webElements.stream().map(newLink -> newLink.getAttribute("href")).collect(Collectors.toList());
+
+        for (String link: stringLinks) {
+            driver.get(link);
+            driver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
+            System.out.println("tab title: " + driver.getTitle());
+            /*
+                getting handler of current window to properly close window after work is done
+             */
+            baseWindowHandler = driver.getWindowHandle();
+        }
 
         /*
             closing opened FF window after work is done
