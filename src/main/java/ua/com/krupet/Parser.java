@@ -17,8 +17,10 @@ import java.util.stream.Collectors;
  */
 public class Parser {
 
-    private static String searchUri = "https://www.google.com.ua/";
-
+    /**
+     * Processing users input
+     * @param args I don`t use it
+     */
     public static void main(String[] args) {
 
         System.out.println("Good day! Please, enter your request: ");
@@ -27,16 +29,29 @@ public class Parser {
         String inputStringRequest = scanIn.nextLine();
         scanIn.close();
 
-        System.out.println("You are searching for: " + inputStringRequest);
-
-        parseRequestString(inputStringRequest);
+        if (!inputStringRequest.isEmpty()) {
+            System.out.println("You are searching for: " + inputStringRequest);
+            parseRequestString(inputStringRequest);
+        }
+        else {
+            System.out.println("Bad request: you can not searching for an empty string!");
+        }
     }
 
+    /**
+     * This method takes the request string, creates WebDriver and processing parsing
+     * results of request
+     * @param request String that represents a desirable google request
+     */
     private static void parseRequestString(String request) {
 
         FirefoxDriver driver = new FirefoxDriver();
+        String searchUri = "https://www.google.com.ua/";
         driver.get(searchUri);
 
+        /*
+            waiting for page rendering
+         */
         driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
 
         /*
@@ -48,16 +63,13 @@ public class Parser {
         driver.findElement(By.xpath("//input[@id='lst-ib']")).sendKeys(request);
         driver.findElement(By.xpath("//button[@name='btnG']")).click();
 
-        /*
-            waiting for page rendering
-         */
         driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
 
         /*
             getting list of search results on a first result page
          */
         List<WebElement> webElements = driver.findElements(By.xpath("//ol[@id='rso']/div[@class='srg']/li[@class='g']" +
-                "/div[@class='rc']/h3[@class='r']/a"));
+                                                                    "/div[@class='rc']/h3[@class='r']/a"));
 
         /*
             because WebDriver using cache for webElements collection I need to copy
