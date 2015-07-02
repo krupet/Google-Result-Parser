@@ -37,6 +37,8 @@ public class Parser {
         FirefoxDriver driver = new FirefoxDriver();
         driver.get(searchUri);
 
+        driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
+
         /*
             getting opened window handler to shut down opened window after work is done
          */
@@ -49,7 +51,7 @@ public class Parser {
         /*
             waiting for page rendering
          */
-        driver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
+        driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
 
         /*
             getting list of search results on a first result page
@@ -69,7 +71,7 @@ public class Parser {
 
         for (String link: stringLinks) {
             driver.get(link);
-            driver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
+            driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
             System.out.println("tab title: " + driver.getTitle());
             /*
                 getting handler of current window to properly close window after work is done
