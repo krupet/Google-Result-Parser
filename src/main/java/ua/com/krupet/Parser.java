@@ -4,9 +4,11 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
 
+import java.io.Console;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -15,34 +17,33 @@ import java.util.stream.Collectors;
  */
 public class Parser {
 
-    private static FirefoxDriver driver = new FirefoxDriver();
+    private static FirefoxDriver driver = null;
     private static String searchUri = "https://www.google.com.ua/";
-    private static String searchQuery;
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) {
 
-        /*
-            getting search query as first arg
-            (means it is passed to CLI surrounded by double quotes to be passes as one solid string)
-         */
-        if (args.length > 0) searchQuery = args[0];
-        else searchQuery = "chuck norris"; // TODO: add some proper empty args handling
+        System.out.println("Good day! Please, enter your request: ");
+        Scanner scanIn = new Scanner(System.in);
+        String inputStringRequest = scanIn.nextLine();
 
-        System.out.println("you are searching for: " + searchQuery);
+        scanIn.close();
+        System.out.println("You are searching for: " + inputStringRequest);
+        parseRequestString(inputStringRequest);
+    }
 
+    public static void parseRequestString(String request) {
+
+        driver = new FirefoxDriver();
         driver.get(searchUri);
 
         /*
-            getting window handler to shut down opened window after work is done
+            getting opened window handler to shut down opened window after work is done
          */
         String baseWindowHandler = driver.getWindowHandle();
 
-        /*
-            searching by id because it is much reliable
-         */
-        driver.findElement(By.id("lst-ib")).clear(); // TODO: change ids to xpath
-        driver.findElement(By.id("lst-ib")).sendKeys(searchQuery);
-        driver.findElement(By.name("btnG")).click();
+        driver.findElement(By.xpath("//input[@id='lst-ib']")).clear(); // TODO: change ids to xpath
+        driver.findElement(By.xpath("//input[@id='lst-ib']")).sendKeys(request);
+        driver.findElement(By.xpath("//button[@name='btnG']")).click();
 
         /*
             waiting for page rendering
@@ -53,7 +54,7 @@ public class Parser {
             getting list of search results on a first result page
          */
         List<WebElement> webElements = driver.findElements(By.xpath("//ol[@id='rso']/div[@class='srg']/li[@class='g']" +
-                                                                    "/div[@class='rc']/h3[@class='r']/a"));
+                "/div[@class='rc']/h3[@class='r']/a"));
 
         /*
             because WebDriver using cache for webElements collection I need to copy
