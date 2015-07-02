@@ -17,29 +17,30 @@ import java.util.stream.Collectors;
  */
 public class Parser {
 
-    private static FirefoxDriver driver = null;
     private static String searchUri = "https://www.google.com.ua/";
 
     public static void main(String[] args) {
 
         System.out.println("Good day! Please, enter your request: ");
+
         Scanner scanIn = new Scanner(System.in);
         String inputStringRequest = scanIn.nextLine();
-
         scanIn.close();
+
         System.out.println("You are searching for: " + inputStringRequest);
+
         parseRequestString(inputStringRequest);
     }
 
-    public static void parseRequestString(String request) {
+    private static void parseRequestString(String request) {
 
-        driver = new FirefoxDriver();
+        FirefoxDriver driver = new FirefoxDriver();
         driver.get(searchUri);
 
         /*
             getting opened window handler to shut down opened window after work is done
          */
-        String baseWindowHandler = driver.getWindowHandle();
+        String windowHandler = driver.getWindowHandle();
 
         driver.findElement(By.xpath("//input[@id='lst-ib']")).clear(); // TODO: change ids to xpath
         driver.findElement(By.xpath("//input[@id='lst-ib']")).sendKeys(request);
@@ -63,7 +64,8 @@ public class Parser {
             it is all because when I switch to another page I loosing collection of WebElements
             because of page reloading
          */
-        List<String> stringLinks = webElements.stream().map(newLink -> newLink.getAttribute("href")).collect(Collectors.toList());
+        List<String> stringLinks = webElements.stream().map(newLink -> newLink.getAttribute("href"))
+                                                       .collect(Collectors.toList());
 
         for (String link: stringLinks) {
             driver.get(link);
@@ -72,13 +74,13 @@ public class Parser {
             /*
                 getting handler of current window to properly close window after work is done
              */
-            baseWindowHandler = driver.getWindowHandle();
+            windowHandler = driver.getWindowHandle();
         }
 
         /*
             closing opened FF window after work is done
          */
-        driver.switchTo().window(baseWindowHandler);
+        driver.switchTo().window(windowHandler);
         driver.close();
     }
 }

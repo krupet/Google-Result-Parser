@@ -11,11 +11,6 @@ import java.util.List;
 public class ParserTests {
 
     @Test
-    public void test_parser_with_cl_parameters() throws InterruptedException {
-
-        String cl_argument = "chuck norris";
-        String[] args = {cl_argument};
-
-        Parser.main(args);
+    public void test_parser_with_cl_parameters() {
     }
 }
